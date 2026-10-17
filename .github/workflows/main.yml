@@ -16,7 +16,8 @@ jobs:
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev build-essential ccache
           pip install --upgrade pip Cython==0.29.33 virtualenv buildozer
       - name: Compilar
-        run: buildozer -v android debug
+        run: |
+          buildozer -v android debug > build.log 2>&1 || { grep -v -E '^\[[= ]*\] +[0-9]+%' build.log | tail -n 60; exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: MegaFlow-APK
