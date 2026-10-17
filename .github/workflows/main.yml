@@ -5,6 +5,10 @@ on:
 jobs:
   apk:
     runs-on: ubuntu-22.04
+    env:
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/25.2.9519653
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -15,6 +19,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev build-essential ccache
           pip install --upgrade pip Cython==0.29.33 virtualenv buildozer
+      - name: Setup Android SDK/NDK
+        run: |
+          mkdir -p "$ANDROID_SDK_ROOT"
+          yes | sudo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --licenses
+          yes | sudo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-33" "build-tools;33.0.3" "ndk;25.2.9519653"
       - name: Compilar
         run: |
           buildozer -v android debug > build.log 2>&1 || { grep -v -E '^\[[= ]*\] +[0-9]+%' build.log | tail -n 60; exit 1; }
