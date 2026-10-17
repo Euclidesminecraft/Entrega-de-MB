@@ -1,0 +1,19 @@
+name: Gerar APK MegaFlow
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compilar
+        id: b
+        uses: ArtemSBulgakov/buildozer-action@v1
+        with:
+          command: buildozer android debug
+          buildozer_version: stable
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MegaFlow-APK
+          path: ${{ steps.b.outputs.filename }}
